@@ -109,6 +109,11 @@ erDiagram
 ```bash
 cd SecureHub
 docker compose up --build
+
+or
+
+docker compose build
+docker compose up -d
 ```
 
 Open browser: **https://localhost** (accept self-signed certificate warning)
