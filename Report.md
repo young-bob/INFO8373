@@ -32,7 +32,7 @@ The .NET 10 framework was selected because of its hardened security features. AS
 ### Task 1.3: Architecture Diagram
 
 ```mermaid
-graph TD
+graph LR
     Client["Browser (Avalonia WASM)"] -- "HTTPS 443" --> Nginx
     Nginx["Nginx TLS Termination"] -- "/api/* → HTTP" --> AppServer
     Nginx -- "/ → Static WASM" --> StaticFiles["wwwroot"]
