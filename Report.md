@@ -1,7 +1,7 @@
 # INFO 8373 - Cybersecurity for Software Development
 ## Final Project Report: Secure File Sharing & Collaboration Hub
 
-**Team Member:** Yangbo (Individual Submission)
+**Team Members:** 
 
 ---
 
