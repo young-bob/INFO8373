@@ -1,0 +1,55 @@
+# ============================================
+# SecureHub - Docker Compose (One-Command Setup)
+# ============================================
+# Usage: docker compose up --build
+# Access: https://localhost
+# ============================================
+
+services:
+  # Backend API (.NET 10 + SQLite)
+  api:
+    build:
+      context: .
+      dockerfile: Dockerfile.api
+    container_name: securehub-api
+    environment:
+      - AES_ENCRYPTION_KEY=${AES_ENCRYPTION_KEY:-MDEyMzQ1Njc4OTAxMjM0NTY3ODkwMTIzNDU2Nzg5MDE=}
+      - DB_CONNECTION_STRING=Data Source=/app/Data/app.db
+      - JWT_SECRET=${JWT_SECRET:-DevelopmentSuperSecretJwtKeyRequiredForSigningRequests!}
+      - JWT_ISSUER=SecureHub
+      - JWT_AUDIENCE=SecureHubClient
+      - DEFAULT_ADMIN_EMAIL=admin@securehub.local
+      - DEFAULT_ADMIN_PASSWORD=AdminSecur3#1024!
+      - API_HTTPS_PORT=8080
+      - ASPNETCORE_URLS=http://+:8080
+      - ASPNETCORE_ENVIRONMENT=Production
+      # Disable HTTPS enforcement inside container (Nginx handles TLS termination)
+      - ASPNETCORE_FORWARDEDHEADERS_ENABLED=true
+    volumes:
+      - ./data/db:/app/Data
+      - ./data/storage:/app/VaultStorage
+    networks:
+      - securehub-net
+    expose:
+      - "8080"
+    restart: unless-stopped
+
+  # Frontend WASM + Nginx Reverse Proxy
+  browser:
+    build:
+      context: .
+      dockerfile: Dockerfile.browser
+    container_name: securehub-browser
+    ports:
+      - "80:80"
+      - "443:443"
+    networks:
+      - securehub-net
+    depends_on:
+      - api
+    restart: unless-stopped
+
+networks:
+  securehub-net:
+    driver: bridge
+    name: securehub-net

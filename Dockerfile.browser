@@ -1,0 +1,54 @@
+# ============================================
+# SecureHub Browser Client - WASM Build + Nginx
+# ============================================
+
+# Stage 1: Build Avalonia WASM
+FROM mcr.microsoft.com/dotnet/sdk:10.0 AS build
+WORKDIR /src
+
+# WASM AOT compilation requires Python3 + native build tools
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    python3 \
+    && rm -rf /var/lib/apt/lists/*
+
+# Copy solution-level package management
+COPY SecureHub.Client/Directory.Packages.props SecureHub.Client/
+
+# Copy all project files for restore
+COPY SecureHub.Client/SecureHub.Client/SecureHub.Client.csproj SecureHub.Client/SecureHub.Client/
+COPY SecureHub.Client/SecureHub.Client.Browser/SecureHub.Client.Browser.csproj SecureHub.Client/SecureHub.Client.Browser/
+
+# Install WASM workload
+RUN dotnet workload install wasm-tools
+
+RUN dotnet restore SecureHub.Client/SecureHub.Client.Browser/SecureHub.Client.Browser.csproj
+
+# Copy all source
+COPY SecureHub.Client/ SecureHub.Client/
+WORKDIR /src/SecureHub.Client/SecureHub.Client.Browser
+RUN dotnet publish -c Release -o /app/publish --no-restore
+
+# Stage 2: Serve with Nginx + TLS
+FROM nginx:alpine AS runtime
+
+# Install openssl for self-signed certificate generation
+RUN apk add --no-cache openssl
+
+# Generate self-signed TLS certificate (Phase 5 Task 5.2)
+RUN mkdir -p /etc/nginx/ssl && \
+    openssl req -x509 -nodes -days 365 \
+    -newkey rsa:2048 \
+    -keyout /etc/nginx/ssl/securehub.key \
+    -out /etc/nginx/ssl/securehub.crt \
+    -subj "/C=CA/ST=Ontario/L=Kitchener/O=SecureHub/CN=localhost"
+
+# Remove default nginx page
+RUN rm -rf /usr/share/nginx/html/*
+
+# Copy published WASM output
+COPY --from=build /app/publish/wwwroot /usr/share/nginx/html
+
+# Custom nginx config for SPA routing + API reverse proxy + TLS
+COPY nginx.conf /etc/nginx/conf.d/default.conf
+
+EXPOSE 80 443

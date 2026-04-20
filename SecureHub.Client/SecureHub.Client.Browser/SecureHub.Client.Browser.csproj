@@ -1,0 +1,24 @@
+<Project Sdk="Microsoft.NET.Sdk.WebAssembly">
+  <!-- IMPORTANT: Requires wasm-tools workload. Install with: sudo dotnet workload install wasm-tools -->
+  <PropertyGroup>
+    <TargetFramework>net10.0-browser</TargetFramework>
+    <OutputType>Exe</OutputType>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+    <Nullable>enable</Nullable>
+    <WasmBuildNative>true</WasmBuildNative>
+    <JsonSerializerIsReflectionEnabledByDefault>true</JsonSerializerIsReflectionEnabledByDefault>
+  </PropertyGroup>
+
+  <!-- Prevent IL Trimmer from stripping View types resolved by ViewLocator via reflection -->
+  <ItemGroup>
+    <TrimmerRootAssembly Include="SecureHub.Client" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Avalonia.Browser" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\SecureHub.Client\SecureHub.Client.csproj" />
+  </ItemGroup>
+</Project>

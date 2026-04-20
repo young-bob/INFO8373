@@ -1,0 +1,47 @@
+# ---------------------------------------------------------
+# SecureHub .gitignore
+# ---------------------------------------------------------
+
+# .NET Build Outputs
+bin/
+obj/
+out/
+
+# User-specific IDE files
+.vs/
+.vscode/
+.idea/
+*.user
+*.suo
+
+# Secrets - NEVER commit real credentials
+.env
+*.pfx
+*.key
+
+# ASP.NET Data Protection Keys (machine-specific crypto)
+.aspnet/
+
+# NuGet local cache (auto-generated per machine)
+.local/
+
+# Microsoft DevTools device fingerprint
+Library/
+
+# Database files
+*.db
+*.db-journal
+*.db-shm
+*.db-wal
+
+# Encrypted file vault & database (Docker bind mount)
+data/
+VaultStorage/
+
+# OS junk
+.DS_Store
+Thumbs.db
+
+# Test artifacts
+IntegrationTest.db
+TestResults/

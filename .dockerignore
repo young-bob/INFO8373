@@ -1,0 +1,38 @@
+# Build output
+**/bin/
+**/obj/
+**/out/
+
+# IDE
+.vs/
+.vscode/
+.idea/
+*.user
+*.suo
+
+# Secrets
+**/.env
+*.pfx
+*.key
+
+# Data (Docker bind mounts)
+data/
+*.db
+*.db-journal
+*.db-shm
+*.db-wal
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Tests
+SecureHub.Tests/
+TestResults/
+IntegrationTest.db
+
+# Misc
+**/.local/
+.gitignore
+*.md
+docker-compose.yml

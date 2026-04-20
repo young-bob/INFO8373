@@ -1,0 +1,36 @@
+# ============================================
+# SecureHub API - Production Dockerfile
+# Multi-stage build for minimal attack surface
+# ============================================
+
+# Stage 1: Build
+FROM mcr.microsoft.com/dotnet/sdk:10.0 AS build
+WORKDIR /src
+
+COPY SecureHub.Api/SecureHub.Api.csproj SecureHub.Api/
+RUN dotnet restore SecureHub.Api/SecureHub.Api.csproj
+
+COPY SecureHub.Api/ SecureHub.Api/
+WORKDIR /src/SecureHub.Api
+RUN dotnet publish -c Release -o /app/publish --no-restore
+
+# Stage 2: Runtime (minimal image, no SDK = smaller attack surface)
+FROM mcr.microsoft.com/dotnet/aspnet:10.0 AS runtime
+WORKDIR /app
+
+# Create non-root user for security hardening (Phase 7)
+RUN groupadd -r securehub && useradd -r -g securehub securehub
+
+COPY --from=build /app/publish .
+
+# Create persistent directories with proper ownership
+RUN mkdir -p /app/Data /app/VaultStorage && \
+    chown -R securehub:securehub /app
+
+USER securehub
+
+EXPOSE 8080
+ENV ASPNETCORE_URLS=http://+:8080
+ENV ASPNETCORE_ENVIRONMENT=Production
+
+ENTRYPOINT ["dotnet", "SecureHub.Api.dll"]

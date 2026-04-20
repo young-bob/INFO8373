@@ -1,0 +1,225 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:vm="using:SecureHub.Client.ViewModels"
+             xmlns:svc="using:SecureHub.Client.Services"
+             x:Class="SecureHub.Client.Views.DashboardView"
+             x:DataType="vm:DashboardViewModel">
+
+    <!-- Gradient Background -->
+    <Grid RowDefinitions="Auto,*,Auto">
+        <Grid.Background>
+            <LinearGradientBrush StartPoint="0%,0%" EndPoint="100%,100%">
+                <GradientStop Color="#e0e7ff" Offset="0"/>
+                <GradientStop Color="#dbeafe" Offset="0.3"/>
+                <GradientStop Color="#ede9fe" Offset="0.6"/>
+                <GradientStop Color="#fce7f3" Offset="1"/>
+            </LinearGradientBrush>
+        </Grid.Background>
+
+        <!-- Glass Header -->
+        <Border Grid.Row="0" Background="#C0FFFFFF" Padding="28,18"
+                BorderBrush="#30000000" BorderThickness="0,0,0,1">
+            <Border.BoxShadow>
+                <BoxShadows>0 2 12 0 #10000000</BoxShadows>
+            </Border.BoxShadow>
+            <Grid ColumnDefinitions="*,Auto,Auto">
+                <StackPanel Orientation="Horizontal" Spacing="14" VerticalAlignment="Center">
+                    <TextBlock Text="SecureHub" FontSize="22" FontWeight="Black" Foreground="#1e293b"/>
+                    <Border Background="#6366f1" CornerRadius="6" Padding="8,3" VerticalAlignment="Center">
+                        <TextBlock Text="ENCRYPTED" FontSize="9" FontWeight="Bold" Foreground="White" VerticalAlignment="Center"/>
+                    </Border>
+                </StackPanel>
+                
+                <Button Grid.Column="1" Command="{Binding ShowDeleteAccountCommand}" Content="Delete Account" 
+                        Background="#FECACA" Foreground="#991b1b" CornerRadius="10" Padding="14,8" 
+                        FontWeight="SemiBold" FontSize="12" Margin="0,0,8,0"
+                        BorderBrush="#FCA5A5" BorderThickness="1"/>
+                <Button Grid.Column="2" Command="{Binding LogoutCommand}" Content="Sign Out" 
+                        Background="#80FFFFFF" Foreground="#475569" CornerRadius="10" Padding="14,8" 
+                        FontWeight="SemiBold" FontSize="12"
+                        BorderBrush="#30000000" BorderThickness="1"/>
+            </Grid>
+        </Border>
+
+        <!-- Main Content -->
+        <ScrollViewer Grid.Row="1" Margin="28,20">
+            <StackPanel Spacing="24">
+                <!-- Toolbar -->
+                <Grid ColumnDefinitions="*,Auto,Auto">
+                    <TextBlock Text="My Encrypted Files" FontSize="20" FontWeight="Bold" 
+                               Foreground="#1e293b" VerticalAlignment="Center"/>
+                    <Button Grid.Column="1" Command="{Binding LoadFilesCommand}" Content="↻ Refresh" 
+                            Background="#80FFFFFF" Foreground="#475569" CornerRadius="10" Padding="14,10" 
+                            FontWeight="SemiBold" FontSize="13" Margin="0,0,8,0"
+                            BorderBrush="#30000000" BorderThickness="1"/>
+                </Grid>
+
+                <!-- Upload Zone -->
+                <Button Command="{Binding OpenFilePickerCommand}" Cursor="Hand" Background="#206366f1" CornerRadius="16" Padding="40" Margin="0,0,0,20"
+                        BorderBrush="#6366f1" BorderThickness="2" HorizontalAlignment="Stretch" HorizontalContentAlignment="Center">
+                    <StackPanel Spacing="10" HorizontalAlignment="Center">
+                        <TextBlock Text="📁 Click to Select File for Encrypted Upload" FontSize="16" FontWeight="SemiBold" Foreground="#1e293b" HorizontalAlignment="Center"/>
+                        <TextBlock Text="Automatic AES-256 Server-Side Encryption at Rest." FontSize="12" Foreground="#64748b" HorizontalAlignment="Center"/>
+                    </StackPanel>
+                </Button>
+
+                <!-- File List -->
+                <ItemsControl ItemsSource="{Binding Files}">
+                    <ItemsControl.ItemTemplate>
+                        <DataTemplate x:DataType="svc:FileItemDto">
+                            <Border Background="#B8FFFFFF" CornerRadius="16" Padding="20" Margin="0,0,0,10"
+                                    BorderBrush="#20000000" BorderThickness="1">
+                                <Border.BoxShadow>
+                                    <BoxShadows>0 2 10 0 #08000000</BoxShadows>
+                                </Border.BoxShadow>
+                                <Grid ColumnDefinitions="Auto,*,Auto" VerticalAlignment="Center">
+                                    <!-- File Icon -->
+                                    <Border Background="#ede9fe" CornerRadius="12" Width="48" Height="48" 
+                                            VerticalAlignment="Center" Margin="0,0,18,0">
+                                        <TextBlock Text="≡" FontWeight="Black" Foreground="#6366f1" HorizontalAlignment="Center" VerticalAlignment="Center" FontSize="24"/>
+                                    </Border>
+                                    
+                                    <!-- File Info -->
+                                    <StackPanel Grid.Column="1" VerticalAlignment="Center">
+                                        <TextBlock Text="{Binding FileName}" FontSize="15" FontWeight="SemiBold" Foreground="#1e293b"/>
+                                        <StackPanel Orientation="Horizontal" Spacing="12" Margin="0,3,0,0">
+                                            <TextBlock Text="{Binding MimeType}" FontSize="11" Foreground="#94a3b8"/>
+                                            <TextBlock Text="{Binding SizeBytes, StringFormat='{}{0:N0} bytes'}" FontSize="11" Foreground="#94a3b8"/>
+                                        </StackPanel>
+                                    </StackPanel>
+                                    
+                                    <!-- Action Buttons -->
+                                    <StackPanel Grid.Column="2" Orientation="Horizontal" Spacing="6">
+                                        <Button Content="Share" 
+                                                Command="{Binding $parent[ItemsControl].((vm:DashboardViewModel)DataContext).OpenShareDialogCommand}"
+                                                CommandParameter="{Binding Id}"
+                                                Background="#ede9fe" Foreground="#6d28d9" CornerRadius="8" Padding="12,7" FontSize="12" FontWeight="SemiBold"
+                                                BorderBrush="#c4b5fd" BorderThickness="1"/>
+                                        <Button Content="Download" 
+                                                Command="{Binding $parent[ItemsControl].((vm:DashboardViewModel)DataContext).DownloadFileCommand}"
+                                                CommandParameter="{Binding Id}"
+                                                Background="#d1fae5" Foreground="#065f46" CornerRadius="8" Padding="12,7" FontSize="12" FontWeight="SemiBold"
+                                                BorderBrush="#6ee7b7" BorderThickness="1"/>
+                                        <Button Content="Delete" 
+                                                Command="{Binding $parent[ItemsControl].((vm:DashboardViewModel)DataContext).DeleteFileCommand}"
+                                                CommandParameter="{Binding Id}"
+                                                Background="#fee2e2" Foreground="#991b1b" CornerRadius="8" Padding="12,7" FontSize="12" FontWeight="SemiBold"
+                                                BorderBrush="#fca5a5" BorderThickness="1"/>
+                                    </StackPanel>
+                                </Grid>
+                            </Border>
+                        </DataTemplate>
+                    </ItemsControl.ItemTemplate>
+                </ItemsControl>
+            </StackPanel>
+        </ScrollViewer>
+
+        <!-- Glass Status Bar -->
+        <Border Grid.Row="2" Background="#C0FFFFFF" Padding="20,10"
+                BorderBrush="#20000000" BorderThickness="0,1,0,0">
+            <TextBlock Text="{Binding StatusMessage}" Foreground="#64748b" FontSize="12" HorizontalAlignment="Center"
+                       TextWrapping="Wrap"/>
+        </Border>
+
+        <!-- Share Dialog Overlay -->
+        <Border Grid.RowSpan="3" Background="#50000000" IsVisible="{Binding IsShareDialogVisible}">
+            <Border Background="#E8FFFFFF" CornerRadius="20" Padding="32" Width="420" 
+                    VerticalAlignment="Center" HorizontalAlignment="Center"
+                    BorderBrush="#30000000" BorderThickness="1">
+                <Border.BoxShadow>
+                    <BoxShadows>0 12 40 0 #20000000</BoxShadows>
+                </Border.BoxShadow>
+                <StackPanel Spacing="16">
+                    <TextBlock Text="Create Share Link" FontSize="20" FontWeight="Bold" Foreground="#1e293b" HorizontalAlignment="Center"/>
+                    <TextBox PlaceholderText="Password (optional)" Text="{Binding SharePassword}" PasswordChar="•" 
+                             CornerRadius="10" Padding="14,12" Background="#80FFFFFF" BorderBrush="#30000000" BorderThickness="1"/>
+                    <TextBox PlaceholderText="Expiry (minutes)" Text="{Binding ShareExpiryMinutes}" 
+                             CornerRadius="10" Padding="14,12" Background="#80FFFFFF" BorderBrush="#30000000" BorderThickness="1"/>
+                    <ComboBox SelectedIndex="{Binding SharePermissionIndex}" HorizontalAlignment="Stretch" CornerRadius="10" Background="#80FFFFFF" BorderBrush="#30000000" BorderThickness="1">
+                        <ComboBoxItem Content="View (Inline)"/>
+                        <ComboBoxItem Content="Download (Attachment)"/>
+                    </ComboBox>
+                    <StackPanel Orientation="Horizontal" Spacing="10" HorizontalAlignment="Center">
+                        <Button Content="Create Link" Command="{Binding ConfirmShareCommand}" 
+                                IsVisible="{Binding !IsShareCreated}"
+                                Background="#6366f1" Foreground="White" CornerRadius="10" Padding="22,12" FontWeight="Bold"/>
+
+                        <Button Content="Copy Link" Command="{Binding CopyShareLinkCommand}" 
+                                IsVisible="{Binding IsShareCreated}"
+                                Background="#10b981" Foreground="White" CornerRadius="10" Padding="22,12" FontWeight="Bold"/>
+
+                        <Button Content="{Binding CloseButtonText}" Command="{Binding CloseShareDialogCommand}" 
+                                Background="#80FFFFFF" Foreground="#475569" CornerRadius="10" Padding="22,12" FontWeight="SemiBold"
+                                BorderBrush="#30000000" BorderThickness="1"/>
+                    </StackPanel>
+                    <TextBox Text="{Binding ShareResultToken}" IsReadOnly="True" PlaceholderText="Generated link appears here..." 
+                             CornerRadius="10" Padding="14,12" FontSize="11" Background="#f0f9ff"
+                             BorderBrush="#93c5fd" BorderThickness="1"
+                             IsVisible="{Binding ShareResultToken, Converter={x:Static StringConverters.IsNotNullOrEmpty}}"/>
+
+                    <!-- Active Shares List -->
+                    <StackPanel Spacing="8" IsVisible="{Binding ActiveShares.Count}">
+                        <Border Height="1" Background="#e2e8f0" Margin="0,4,0,8"/>
+                        <TextBlock Text="Active Share Links:" FontSize="14" FontWeight="SemiBold" Foreground="#475569"/>
+                        <ItemsControl ItemsSource="{Binding ActiveShares}">
+                            <ItemsControl.ItemTemplate>
+                                <DataTemplate x:DataType="svc:ShareLinkDto">
+                                    <Border Background="#f8fafc" CornerRadius="8" Padding="12,8" Margin="0,0,0,6"
+                                            BorderBrush="#e2e8f0" BorderThickness="1">
+                                        <Grid ColumnDefinitions="*,Auto">
+                                            <StackPanel>
+                                                <TextBlock Text="{Binding Expiry, StringFormat='Expires: {0:MMM dd, yyyy HH:mm}'}" FontSize="12" Foreground="#334155" FontWeight="SemiBold"/>
+                                                <StackPanel Orientation="Horizontal" Spacing="6" Margin="0,4,0,0">
+                                                    <TextBlock Text="{Binding Permission}" FontSize="10" Foreground="#6366f1" FontWeight="Bold"/>
+                                                    <TextBlock Text="🔒 Password Protected" IsVisible="{Binding HasPassword}" FontSize="10" Foreground="#10b981"/>
+                                                </StackPanel>
+                                            </StackPanel>
+                                            <StackPanel Grid.Column="1" Orientation="Horizontal" Spacing="6" VerticalAlignment="Center">
+                                                <Button Content="Copy" 
+                                                        Command="{Binding $parent[ItemsControl].((vm:DashboardViewModel)DataContext).CopyExistingShareLinkCommand}"
+                                                        CommandParameter="{Binding}"
+                                                        Background="#d1fae5" Foreground="#065f46" CornerRadius="6" Padding="12,6" FontSize="11" FontWeight="SemiBold"
+                                                        BorderBrush="#6ee7b7" BorderThickness="1"/>
+                                                
+                                                <Button Content="Revoke" 
+                                                        Command="{Binding $parent[ItemsControl].((vm:DashboardViewModel)DataContext).RevokeShareCommand}"
+                                                        CommandParameter="{Binding Id}"
+                                                        Background="#fee2e2" Foreground="#991b1b" CornerRadius="6" Padding="12,6" FontSize="11" FontWeight="SemiBold"
+                                                        BorderBrush="#fca5a5" BorderThickness="1"/>
+                                            </StackPanel>
+                                        </Grid>
+                                    </Border>
+                                </DataTemplate>
+                            </ItemsControl.ItemTemplate>
+                        </ItemsControl>
+                    </StackPanel>
+                </StackPanel>
+            </Border>
+        </Border>
+
+        <!-- Delete Account Dialog Overlay -->
+        <Border Grid.RowSpan="3" Background="#50000000" IsVisible="{Binding IsDeleteAccountVisible}">
+            <Border Background="#E8FFFFFF" CornerRadius="20" Padding="32" Width="420" 
+                    VerticalAlignment="Center" HorizontalAlignment="Center"
+                    BorderBrush="#30000000" BorderThickness="1">
+                <Border.BoxShadow>
+                    <BoxShadows>0 12 40 0 #20000000</BoxShadows>
+                </Border.BoxShadow>
+                <StackPanel Spacing="16">
+                    <TextBlock Text="Delete Account" FontSize="20" FontWeight="Bold" Foreground="#dc2626" HorizontalAlignment="Center"/>
+                    <TextBlock Text="This will permanently erase your account, all files, and share links. This action cannot be undone." 
+                               Foreground="#64748b" TextWrapping="Wrap" TextAlignment="Center" FontSize="13"/>
+                    <TextBox PlaceholderText="Confirm your password" Text="{Binding DeleteAccountPassword}" PasswordChar="•" 
+                             CornerRadius="10" Padding="14,12" Background="#80FFFFFF" BorderBrush="#30000000" BorderThickness="1"/>
+                    <StackPanel Orientation="Horizontal" Spacing="10" HorizontalAlignment="Center">
+                        <Button Content="Erase Everything" Command="{Binding ConfirmDeleteAccountCommand}" 
+                                Background="#dc2626" Foreground="White" CornerRadius="10" Padding="22,12" FontWeight="Bold"/>
+                        <Button Content="Cancel" Command="{Binding CancelDeleteAccountCommand}" 
+                                Background="#80FFFFFF" Foreground="#475569" CornerRadius="10" Padding="22,12" FontWeight="SemiBold"
+                                BorderBrush="#30000000" BorderThickness="1"/>
+                    </StackPanel>
+                </StackPanel>
+            </Border>
+        </Border>
+    </Grid>
+</UserControl>

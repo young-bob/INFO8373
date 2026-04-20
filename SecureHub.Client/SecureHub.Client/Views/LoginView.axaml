@@ -1,0 +1,77 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:vm="using:SecureHub.Client.ViewModels"
+             x:Class="SecureHub.Client.Views.LoginView"
+             x:DataType="vm:LoginViewModel">
+
+    <!-- Gradient Background -->
+    <Panel>
+        <Panel.Background>
+            <LinearGradientBrush StartPoint="0%,0%" EndPoint="100%,100%">
+                <GradientStop Color="#e0e7ff" Offset="0"/>
+                <GradientStop Color="#dbeafe" Offset="0.3"/>
+                <GradientStop Color="#ede9fe" Offset="0.6"/>
+                <GradientStop Color="#fce7f3" Offset="1"/>
+            </LinearGradientBrush>
+        </Panel.Background>
+
+        <!-- Floating Glass Card -->
+        <Border CornerRadius="24" Width="420" Padding="44"
+                VerticalAlignment="Center" HorizontalAlignment="Center"
+                Background="#C0FFFFFF"
+                BorderBrush="#40FFFFFF" BorderThickness="1.5"
+                ClipToBounds="False">
+            <Border.BoxShadow>
+                <BoxShadows>0 8 32 0 #18000000, 0 2 8 0 #10000000</BoxShadows>
+            </Border.BoxShadow>
+            
+            <StackPanel Spacing="28">
+                <!-- Logo -->
+                <StackPanel Spacing="6">
+                    <TextBlock Text="SecureHub" FontSize="34" FontWeight="Black" 
+                               Foreground="#1e293b" HorizontalAlignment="Center"/>
+                    <TextBlock Text="End-to-End Encrypted Vault" FontSize="13" 
+                               Foreground="#64748b" HorizontalAlignment="Center"/>
+                </StackPanel>
+                
+                <!-- Input Fields -->
+                <StackPanel Spacing="14" Margin="0,8,0,0">
+                    <TextBox PlaceholderText="Email Address" Text="{Binding Email}" 
+                             CornerRadius="12" Padding="16,14" FontSize="14"
+                             Background="#80FFFFFF" BorderBrush="#30000000" BorderThickness="1"/>
+                    <TextBox PlaceholderText="Password" Text="{Binding Password}" PasswordChar="•" 
+                             CornerRadius="12" Padding="16,14" FontSize="14"
+                             Background="#80FFFFFF" BorderBrush="#30000000" BorderThickness="1"/>
+                </StackPanel>
+                
+                <!-- Error Message -->
+                <TextBlock Text="{Binding ErrorMessage}" Foreground="#dc2626" 
+                           IsVisible="{Binding ErrorMessage, Converter={x:Static StringConverters.IsNotNullOrEmpty}}" 
+                           TextWrapping="Wrap" HorizontalAlignment="Center" FontWeight="SemiBold" FontSize="13"/>
+                
+                <!-- Buttons -->
+                <StackPanel Spacing="10" Margin="0,4,0,0">
+                    <Button Command="{Binding LoginCommand}" Content="Login to Vault" 
+                            HorizontalAlignment="Stretch" HorizontalContentAlignment="Center" 
+                            CornerRadius="12" Padding="16,14" 
+                            FontSize="15" FontWeight="Bold" IsEnabled="{Binding !IsLoading}">
+                        <Button.Background>
+                            <LinearGradientBrush StartPoint="0%,0%" EndPoint="100%,0%">
+                                <GradientStop Color="#6366f1" Offset="0"/>
+                                <GradientStop Color="#8b5cf6" Offset="1"/>
+                            </LinearGradientBrush>
+                        </Button.Background>
+                        <Button.Foreground>
+                            <SolidColorBrush Color="White"/>
+                        </Button.Foreground>
+                    </Button>
+                    <Button Command="{Binding RegisterCommand}" Content="Create New Account" 
+                            HorizontalAlignment="Stretch" HorizontalContentAlignment="Center" 
+                            Background="Transparent" Foreground="#6366f1" CornerRadius="12" Padding="16,14" 
+                            BorderBrush="#6366f1" BorderThickness="1.5" FontSize="15" FontWeight="SemiBold"
+                            IsEnabled="{Binding !IsLoading}"/>
+                </StackPanel>
+            </StackPanel>
+        </Border>
+    </Panel>
+</UserControl>

@@ -1,0 +1,11 @@
+﻿<Solution>
+  <Project Path="SecureHub.Client.Android/SecureHub.Client.Android.csproj">
+    <Deploy />
+  </Project>
+  <Project Path="SecureHub.Client.Browser/SecureHub.Client.Browser.csproj" />
+  <Project Path="SecureHub.Client.Desktop/SecureHub.Client.Desktop.csproj" />
+  <Project Path="SecureHub.Client.iOS/SecureHub.Client.iOS.csproj">
+    <Deploy />
+  </Project>
+  <Project Path="SecureHub.Client/SecureHub.Client.csproj" />
+</Solution>
